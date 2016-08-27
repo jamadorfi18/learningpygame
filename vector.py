@@ -22,8 +22,9 @@ class Vector(object):
 
     def normalize(self):
         magnitude = self.get_magnitude()
-        self.x /= magnitude
-        self.y /= magnitude
+        if magnitude != 0:
+            self.x /= magnitude
+            self.y /= magnitude
 
     def __add__(self, rhs):  # right hand side
         return Vector(self.x + rhs.x, self.y + rhs.y)

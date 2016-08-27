@@ -4,6 +4,7 @@ import pygame
 from pygame.locals import *
 from sys import exit
 from sprites import Sara, Shot, Robot, Laser
+from vector import Vector
 
 # Useful constants
 SCREEN_SIZE = (640, 480)
@@ -38,35 +39,41 @@ rl_w = robot_laser.sprite.get_width()
 rl_h = robot_laser.sprite.get_height()
 robot_laser.x = robot.x + 20 - rl_w
 robot_laser.y = robot.y + 8 - rl_h / 2
+
+def get_player_direction():
+    pressed_keys = pygame.key.get_pressed()
+    print pressed_keys
+    direction = Vector(0, 0)
+    if pressed_keys[K_LEFT]:
+        direction.x = -1
+    elif pressed_keys[K_RIGHT]:
+        direction.x = +1
+
+    if pressed_keys[K_UP]:
+        direction.y = -1
+    elif pressed_keys[K_DOWN]:
+        direction.y = +1
+    print direction
+    direction.normalize()
+    return direction
+
 # main loop
 while True:
     for event in pygame.event.get():
         if event.type == QUIT:
             exit()
+
         if event.type == KEYDOWN:
-            if event.key == K_LEFT:
-                move_x = -1
-            elif event.key == K_RIGHT:
-                move_x = 1
-            elif event.key == K_UP:
-                move_y = -1
-            elif event.key == K_DOWN:
-                move_y = 1
-            elif event.key == 32:  # spacebar for shot
+            if event.key == 32:  # spacebar for shot
                 sara_pos = sara.get_pos()
                 shots.append(Shot.fire(sara_pos[0] + sara.sprite.get_width(), sara_pos[1] + 36))
-        elif event.type == KEYUP:
-            if event.key == K_LEFT:
-                move_x = 0
-            elif event.key == K_RIGHT:
-                move_x = 0
-            elif event.key == K_UP:
-                move_y = 0
-            elif event.key == K_DOWN:
-                move_y = 0
+
+    player_direction = get_player_direction()
+
 
     seconds_passed = clock.tick(60) / 1000.0  # 60 frames per second, pc mustard race
-    sara.move(seconds_passed, move_x, move_y)
+
+    sara.move(seconds_passed, player_direction)
 
     screen.blit(background, (0, 0))
     sara.blit(screen)

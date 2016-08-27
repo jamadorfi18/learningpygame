@@ -1,4 +1,5 @@
 from pygame.image import load as pygame_image_load
+from vector import Vector
 
 
 BLACK = (0, 0, 0)
@@ -9,6 +10,8 @@ ROBOT_IMAGE_FILENAME = "images/robot.png"
 
 
 class Sprite(object):
+    SPEED = 0
+
     def __init__(self, x, y, sprite=None):
         self.x = x
         self.y = y
@@ -20,18 +23,7 @@ class Sprite(object):
     def get_pos(self):
         return (self.x, self.y)
 
-class Sara(Sprite):
-
-    SPEED = 300
-
-    def __init__(self, x, y):
-        sprite = pygame_image_load(SARA_IMG_FILENAME).convert_alpha()
-        super(Sara, self).__init__(x, y, sprite)
-
-    def move(self, seconds_passed, move_x, move_y):
-        self.x += Sara.SPEED * move_x * seconds_passed
-        self.y += Sara.SPEED * move_y * seconds_passed
-
+    def keep_inside_screen(self):
         if self.x < 0:
             self.x = 0
         elif self.x > SCREEN_SIZE[0] - self.sprite.get_width():
@@ -42,6 +34,20 @@ class Sara(Sprite):
         elif self.y > SCREEN_SIZE[1] - self.sprite.get_height():
             self.y = SCREEN_SIZE[1] - self.sprite.get_height()
 
+    def move(self, seconds_passed, vector):
+        self.x += self.SPEED * seconds_passed * vector.x
+        self.y += self.SPEED * seconds_passed * vector.y
+
+        self.keep_inside_screen()
+
+
+class Sara(Sprite):
+
+    SPEED = 300
+
+    def __init__(self, x, y):
+        sprite = pygame_image_load(SARA_IMG_FILENAME).convert_alpha()
+        super(Sara, self).__init__(x, y, sprite)
 
 class Shot(Sprite):
     NUMBER_SHOTS = 0
