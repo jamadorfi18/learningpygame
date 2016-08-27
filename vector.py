@@ -1,17 +1,4 @@
-# This file is part of learningpygame
-#
-# learningpygame is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# any later version.
-#
-# learnigpygame is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with pygame.  If not, see <http://www.gnu.org/licenses/>.
+from math import sqrt
 
 
 class Vector(object):
@@ -29,3 +16,26 @@ class Vector(object):
     @staticmethod
     def create_from_points(p1, p2):
         return Vector(p2[0]-p1[0], p2[1] - p1[1])
+
+    def get_magnitude(self):
+        return sqrt(self.x**2 + self.y**2)
+
+    def normalize(self):
+        magnitude = self.get_magnitude()
+        self.x /= magnitude
+        self.y /= magnitude
+
+    def __add__(self, rhs):  # right hand side
+        return Vector(self.x + rhs.x, self.y + rhs.y)
+
+    def __sub__(self, rhs):
+        return Vector(self.x - rhs.x, self.y - rhs.y)
+
+    def __neg__(self):
+        return Vector(-self.x , -self.y)
+
+    def __mul__(self, scalar):
+        return Vector(self.x * scalar, self.y * scalar)
+
+    def __div__(self, scalar):
+        return Vector(self.x / scalar, self.y / scalar)
