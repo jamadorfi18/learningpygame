@@ -1,98 +1,54 @@
-#!/usr/bin/env python
-
 import pygame
-from pygame.locals import *
-from sys import exit
-from sprites import Sara, Shot, Robot, Laser
-from vector import Vector
+from random import randint
+from sprites import Sara
+from robot import Robot
+from world import World
 
-# Useful constants
-SCREEN_SIZE = (640, 480)
-BLACK = (0, 0, 0)
+SCREEN_SIZE = (800, 600)
 
-# Images
-BACKGROUND_IMG_FILENAME = 'images/grass.png'
-CURSOR_IMG_FILENAME = 'images/gauntlet.png'
+SONG_END = pygame.USEREVENT + 1
 
-# init
+pygame.mixer.pre_init(44100, -16, 2, 1024*4)
 pygame.init()
+pygame.mixer.music.load("intro.wav")
+pygame.mixer.music.set_endevent(SONG_END)
+pygame.mixer.music.play(1)
+
+
 clock = pygame.time.Clock()
+screen = pygame.display.set_mode(SCREEN_SIZE, 0, 32)
+pygame.display.set_caption('Sara\'s shooter')
 
-screen = pygame.display.set_mode(SCREEN_SIZE, 0 , 32)
-pygame.display.set_caption("Push goblins")
+world = World()
 
-background = pygame.image.load(BACKGROUND_IMG_FILENAME).convert()
-cursor = pygame.image.load(CURSOR_IMG_FILENAME).convert_alpha()
-font = pygame.font.SysFont('lobster', 16)
-number_shots = 0
-text_surface = font.render('Sara has made {} shots'.format(number_shots), True, BLACK)
+sara = Sara(world)
+sara.set_location(100, SCREEN_SIZE[1] / 2)
+world.add_entity(sara, ('events', 'player'))
 
+def create_robot(world):
+    robot = Robot(world)
+    robot.set_location(randint(0, SCREEN_SIZE[0]), randint(0, SCREEN_SIZE[1]))
+    world.add_entity(robot, ('enemies', ))
 
-# Sprites
-sara = Sara(SCREEN_SIZE[0] / 2, SCREEN_SIZE[1] / 2)
-shots = []
-move_x = 0
-move_y = 0
-robot = Robot(600, 400)
-robot_laser = Laser(20, 8)
-rl_w = robot_laser.sprite.get_width()
-rl_h = robot_laser.sprite.get_height()
-robot_laser.x = robot.x + 20 - rl_w
-robot_laser.y = robot.y + 8 - rl_h / 2
+create_robot(world)
+create_robot(world)
+create_robot(world)
 
-def get_player_direction():
-    pressed_keys = pygame.key.get_pressed()
-    print pressed_keys
-    direction = Vector(0, 0)
-    if pressed_keys[K_LEFT]:
-        direction.x = -1
-    elif pressed_keys[K_RIGHT]:
-        direction.x = +1
+should_quit = False
+while not should_quit:
+    if randint(1, 500) == 1:
+        create_robot(world)
 
-    if pressed_keys[K_UP]:
-        direction.y = -1
-    elif pressed_keys[K_DOWN]:
-        direction.y = +1
-    print direction
-    direction.normalize()
-    return direction
-
-# main loop
-while True:
-    for event in pygame.event.get():
-        if event.type == QUIT:
-            exit()
-
-        if event.type == KEYDOWN:
-            if event.key == 32:  # spacebar for shot
-                sara_pos = sara.get_pos()
-                shots.append(Shot.fire(sara_pos[0] + sara.sprite.get_width(), sara_pos[1] + 36))
-
-    player_direction = get_player_direction()
-
-
-    seconds_passed = clock.tick(60) / 1000.0  # 60 frames per second, pc mustard race
-
-    sara.move(seconds_passed, player_direction)
-
-    screen.blit(background, (0, 0))
-    sara.blit(screen)
-    robot.blit(screen)
-    robot_laser.blit(screen)
-    robot_laser.move(seconds_passed)
-
-    cursor_x, cursor_y = pygame.mouse.get_pos()
-    cursor_x -= cursor.get_width() / 2
-    cursor_y -= cursor.get_height() / 2
-    screen.blit(cursor, (cursor_x, cursor_y))
-    
-    text_surface = font.render('Sara has made {} shots'.format(Shot.NUMBER_SHOTS), True, BLACK)
-    screen.blit(text_surface, (20, 20))
-
-    for shot in shots:
-        is_still_in = shot.move(seconds_passed)
-        shot.blit(screen)
-        if not is_still_in:
-            del shots[shots.index(shot)]
+    events = pygame.event.get()
+    for event in events:
+        if event.type == SONG_END:
+            pygame.mixer.music.load('main.wav')
+            pygame.mixer.music.play(-1)
+    world.process_events(events)
+    seconds_passed = clock.tick(60) / 1000.0
+    should_quit = world.process(seconds_passed)
+    world.render(screen)
 
     pygame.display.update()
+
+pygame.quit()
