@@ -40,3 +40,7 @@ class Vector(object):
 
     def __div__(self, scalar):
         return Vector(self.x / scalar, self.y / scalar)
+
+    def get_distance_to(self, location):
+        v = Vector.create_from_points((self.x, self.y), (location.x, location.y))
+        return v.get_magnitude()
