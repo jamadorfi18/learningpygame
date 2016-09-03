@@ -1,5 +1,5 @@
 import pygame
-from sprites import Entity
+from entity import Entity
 from random import randint
 from statemachine import State
 from vector import Vector
