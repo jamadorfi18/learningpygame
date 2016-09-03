@@ -18,6 +18,7 @@ while True:
     event_text = event_text[-SCREEN_SIZE[1]/font_height:]
 
     if event.type == QUIT:
+        pygame.quit()
         exit()
 
     screen.fill(BLACK)
