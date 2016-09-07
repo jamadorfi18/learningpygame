@@ -27,6 +27,7 @@ class World:
         return self.detect_collisions()
 
     def detect_collisions(self):
+        # Detect collisions on enemies, if shot, then remove the enemies
         if (self.entities.get('enemies') and
             self.entities.get('ally_shots')):
             for enemy in self.entities['enemies']:
@@ -34,14 +35,41 @@ class World:
                 if collisions:
                     self.entities['all'].remove(enemy)
                     self.entities['enemies'].remove(enemy)
-        if self.entities.get('enemy_shots'):
-            for player in self.entities['player']:
-                collisions = pygame.sprite.spritecollide(player, self.entities['enemy_shots'], True)
+
+        # Detect enemy shots on buildings
+        if ('enemy_shots' in self.entities):
+            for building in self.entities['buildings']:
+                collisions = pygame.sprite.spritecollide(building,
+                              self.entities['enemy_shots'], True)
                 if collisions:
-                    self.entities['all'].remove(player)
-                    self.entities['events'].remove(player)
-                    self.entities['player'].remove(player)
-                    return True
+                    print "Enemy shots detected"
+                    pass
+
+        # Detect Sara on buildings
+        if ('player' in self.entities):
+            for building in self.entities['buildings']:
+                collisions = pygame.sprite.spritecollide(building,
+                             self.entities['player'], False)
+                if collisions:
+                    self.entities['player'].collisioned = True
+                    self.entities['player'].process_events(events)
+                    print self.entities['player'].collisioned
+                    pass
+
+        # Detect Sara shots on buildings
+        if ('ally_shots' in self.entities):
+            for building in self.entities['buildings']:
+                collisions = (pygame.sprite.spritecollide(building,
+                              self.entities['player'], False) or
+                              pygame.sprite.spritecollide(building,
+                              self.entities['enemies'], False) or
+                              pygame.sprite.spritecollide(building,
+                              self.entities['enemy_shots'], True) or
+                              pygame.sprite.spritecollide(building,
+                              self.entities['ally_shots'], True))
+                if collisions:
+                    print "DETECTED!!"
+                    pass
         return False
 
     def render(self, surface):
