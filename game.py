@@ -19,7 +19,6 @@ class Game:
         self.screen = screen
 
 #        pygame.mixer.pre_init(44100, -16, 2, 1024*4)
-
         pygame.mixer.music.load("intro.wav")
         pygame.mixer.music.set_endevent(Game.SONG_END)
         pygame.mixer.music.play(1)

@@ -12,11 +12,8 @@ class Bullet(Entity):
     """ Make the bullets independant 
         Make the bullets great again """
 
-    def __init__(self, player, world):
+    def __init__(self, world):
 
-        # TODO: Player should not be an argument, instead, we could
-        #       have a Weapon class. This will make the code easy to read,
-        #       things like ammo and reload system could be implemented.
         sprite = pygame.image.load(LASER_IMG_FILENAME).convert()
         sprite.set_colorkey(BLACK)
         super(Bullet, self).__init__(world, 'bulllet', sprite)
@@ -27,8 +24,6 @@ class Bullet(Entity):
         self.height = 15
 
         self.rect = pygame.Rect(0,0, self.width, self.height)
-        self.rect.centerx = player.centerx
-        self.rect.top = player.top
 
         # Store the bullet's position as a decimal value
         self.x = float(self.rect.x)
