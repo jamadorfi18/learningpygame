@@ -2,7 +2,7 @@ import pygame
 from vector import Vector
 from entity import Entity
 from spritesheet import Spritesheet
-
+from bullet import Bullet
 
 BLACK = (0, 0, 0)
 SARA_IMG_FILENAME = 'images/sara.png'
@@ -20,6 +20,11 @@ class Sara(Entity):
         self.speed = 200
         self.animation = 0
         self.animation_time = 0
+        self.moving = False
+
+        self.width = self.image.get_width()
+        self.height = self.image.get_height()
+        self.rect = pygame.Rect(0, 0, self.width, self.height)
 
     def process_events(self, events):
         pressed_keys = pygame.key.get_pressed()
@@ -48,11 +53,11 @@ class Sara(Entity):
 
     def fire(self):
         # TODO if sara is moving and fires, laser appears in a previous location
-        x = self.location.x + 40
-        y = self.location.y + 36
-        shot = Shot(self.world)
-        shot.set_location(x, y)
-        self.world.add_entity(shot, ('ally_shots', ))
+        x = self.location.x + self.width
+        y = self.location.y + self.height / 2
+        bullet = Bullet(self.rect, self.world)
+        bullet.set_location(x, y)
+        self.world.add_entity(bullet, ('ally_shots', ))
 
     def move(self, time_passed):
         is_moving = super(Sara, self).move(time_passed)
@@ -77,18 +82,3 @@ class Sara(Entity):
             else:
                 self.animation = 0
         self.image = self.spritesheet.get_image(self.animation)
-
-class Shot(Entity):
-    def __init__(self, world):
-        sprite = pygame.image.load(LASER_IMG_FILENAME).convert()
-        sprite.set_colorkey(BLACK)
-        super(Shot, self).__init__(world, 'shot', sprite)
-        self.speed = 600
-
-    def process(self, time_passed):
-        if not self.destination:
-            self.destination = Vector(
-                SCREEN_SIZE[0] + self.image.get_width(),
-                self.location.y
-            )
-        super(Shot, self).process(time_passed)
