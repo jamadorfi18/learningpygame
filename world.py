@@ -1,14 +1,23 @@
 from vector import Vector
 import pygame
+from random import choice as random_choice
 
-
-BACKGROUND_IMG_FILENAME = 'images/grass.png'
+# TODO DRY
+SCREEN_SIZE = (800, 600)
 
 class World:
 
     def __init__(self):
         self.entities = {'all': pygame.sprite.Group()}
-        self.background = pygame.image.load(BACKGROUND_IMG_FILENAME).convert()
+        bg_tiles = list()
+        for i in xrange(1, 4):
+            bg_tiles.append(pygame.image.load('images/floor{}.png'.format(i)).convert())
+
+        self.background = pygame.surface.Surface(SCREEN_SIZE)
+        # 32 is the size of the tile
+        for x in xrange(0, SCREEN_SIZE[0], 32):
+            for y in xrange(0, SCREEN_SIZE[1], 32):
+                self.background.blit(random_choice(bg_tiles), (x, y))
 
     def add_entity(self, entity, kinds=None):
         self.entities['all'].add(entity)
