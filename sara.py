@@ -2,7 +2,7 @@ import pygame
 from vector import Vector
 from entity import Entity
 from spritesheet import Spritesheet
-from bullet import Bullet
+from weapon import Weapon
 
 BLACK = (0, 0, 0)
 SARA_IMG_FILENAME = 'images/sara.png'
@@ -22,6 +22,9 @@ class Sara(Entity):
         self.animation_time = 0
         self.moving = False
 
+        # Weapon init
+        self.weapon = Weapon(self, world)
+
         self.width = self.image.get_width()
         self.height = self.image.get_height()
         self.rect = pygame.Rect(0, 0, self.width, self.height)
@@ -38,6 +41,10 @@ class Sara(Entity):
             direction.y = -1
         elif pressed_keys[pygame.K_DOWN]:
             direction.y = +1
+
+        if pressed_keys[pygame.K_r]:
+            self.weapon.reload()
+
         direction.normalize()
 
         self.destination = self.location + Vector(
@@ -52,12 +59,7 @@ class Sara(Entity):
                 self.fire()
 
     def fire(self):
-        # TODO if sara is moving and fires, laser appears in a previous location
-        x = self.location.x + self.width
-        y = self.location.y + self.height / 2
-        bullet = Bullet(self.rect, self.world)
-        bullet.set_location(x, y)
-        self.world.add_entity(bullet, ('ally_shots', ))
+        self.weapon.fire()
 
     def move(self, time_passed):
         is_moving = super(Sara, self).move(time_passed)
