@@ -1,5 +1,4 @@
 import pygame
-from pygame.sprite import Sprite
 
 from vector import Vector
 from entity import Entity
