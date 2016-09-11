@@ -1,6 +1,6 @@
 import pygame
 from random import randint
-from sprites import Sara
+from sara import Sara
 from robot import Robot
 from world import World
 

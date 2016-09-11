@@ -11,7 +11,7 @@ class Vector(object):
         self.y = y
 
     def __str__(self):
-        return '({}, {})'.format(self.x, self.y)
+        return 'Vector({}, {})'.format(self.x, self.y)
 
     @staticmethod
     def create_from_points(p1, p2):
@@ -44,3 +44,9 @@ class Vector(object):
     def get_distance_to(self, location):
         v = Vector.create_from_points((self.x, self.y), (location.x, location.y))
         return v.get_magnitude()
+
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
